@@ -1,0 +1,605 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Income Tax Calculator | TaxCalc Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(-100px) translateY(-100px); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .greeting {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+            border: 1px solid #e5e7eb;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .form-section:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 20px 30px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .section-content {
+            padding: 30px;
+            background: white;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .currency-input {
+            padding-left: 40px !important;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+            border-radius: 15px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 8px;
+            color: #6b7280;
+            cursor: help;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .flash-error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .section-content {
+                padding: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-calculator"></i> TaxCalc Pro</h1>
+                <p class="subtitle">Professional Income Tax Calculator</p>
+                <div class="greeting">{{ greeting }}</div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <form method="POST" action="/calculate" id="taxForm">
+                <!-- Personal Information -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3 class="section-title">Personal Information</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="name">Full Name <span style="color: #ef4444;">*</span></label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="age">Age <span style="color: #ef4444;">*</span></label>
+                                <input type="number" id="age" name="age" min="18" max="120" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Income Sources -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <h3 class="section-title">Income Sources</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="monthly_salary">Monthly Salary <span style="color: #ef4444;">*</span></label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="monthly_salary" name="monthly_salary" class="currency-input" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="basic_salary">Basic Salary (Monthly)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="basic_salary" name="basic_salary" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="hra">House Rent Allowance (HRA) <i class="fas fa-info-circle tooltip" data-tooltip="Monthly HRA amount"></i></label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="hra" name="hra" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="lta">Leave Travel Allowance (LTA)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="lta" name="lta" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="da">Dearness Allowance (DA)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="da" name="da" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="ca">Conveyance Allowance</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="ca" name="ca" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="other_allowance">Other Allowances</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="other_allowance" name="other_allowance" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="house_rent">House Rent Income (Monthly)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="house_rent" name="house_rent" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="business_income">Business Income (Annual)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="business_income" name="business_income" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="capital_gain">Capital Gains/Loss</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="capital_gain" name="capital_gain" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="other_income">Other Income (Monthly)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="other_income" name="other_income" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exemption Details -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="section-title">Exemption Details</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="rent_paid">Monthly Rent Paid</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="rent_paid" name="rent_paid" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="city_type">City Type</label>
+                                <select id="city_type" name="city_type">
+                                    <option value="metro">Metro City</option>
+                                    <option value="non-metro">Non-Metro City</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="children">Number of Children</label>
+                                <input type="number" id="children" name="children" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="gratuity">Gratuity Received</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="gratuity" name="gratuity" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deductions -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <h3 class="section-title">Tax Deductions</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="investment_80c">Section 80C Investments <i class="fas fa-info-circle tooltip" data-tooltip="PPF, ELSS, Insurance Premium, etc. (Max: ₹1,50,000)"></i></label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="investment_80c" name="investment_80c" class="currency-input" step="0.01" value="0" max="150000">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="health_insurance">Health Insurance Premium (80D)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="health_insurance" name="health_insurance" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="parents_insurance">Parents Insurance Premium</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="parents_insurance" name="parents_insurance" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="parents_age">Parents Age</label>
+                                <input type="number" id="parents_age" name="parents_age" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="education_loan">Education Loan Interest (Monthly)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="education_loan" name="education_loan" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="donation">Charitable Donations (80G)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="donation" name="donation" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="savings_interest">Savings Account Interest <i class="fas fa-info-circle tooltip" data-tooltip="Max deduction: ₹10,000"></i></label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="savings_interest" name="savings_interest" class="currency-input" step="0.01" value="0" max="10000">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="home_loan">Home Loan Interest (Monthly)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" id="home_loan" name="home_loan" class="currency-input" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="possession">House Possession Status</label>
+                                <select id="possession" name="possession">
+                                    <option value="self_occupied">Self Occupied</option>
+                                    <option value="rented">Let Out (Rented)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-calculator"></i> Calculate Income Tax
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Progress bar functionality
+        const form = document.getElementById('taxForm');
+        const progressFill = document.getElementById('progressFill');
+        const formSections = document.querySelectorAll('.form-section');
+        
+        function updateProgress() {
+            const requiredFields = form.querySelectorAll('input[required]');
+            let filledFields = 0;
+            
+            requiredFields.forEach(field => {
+                if (field.value.trim() !== '') {
+                    filledFields++;
+                }
+            });
+            
+            const progress = (filledFields / requiredFields.length) * 100;
+            progressFill.style.width = progress + '%';
+        }
+        
+        // Update progress on input
+        form.addEventListener('input', updateProgress);
+        
+        // Form validation and enhancement
+        form.addEventListener('submit', function(e) {
+            const requiredFields = form.querySelectorAll('input[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (field.value.trim() === '') {
+                    field.style.borderColor = '#ef4444';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#e5e7eb';
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+            }
+        });
+        
+        // Auto-fill basic salary if not provided
+        document.getElementById('monthly_salary').addEventListener('input', function() {
+            const basicSalaryField = document.getElementById('basic_salary');
+            if (basicSalaryField.value == 0 || basicSalaryField.value == '') {
+                basicSalaryField.value = (this.value * 0.4).toFixed(2); // Assume 40% basic
+            }
+        });
+    </script>
+</body>
+</html>

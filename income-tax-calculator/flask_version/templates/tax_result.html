@@ -1,0 +1,609 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Calculation Results | TaxCalc Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #3b82f6;
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary-card.highlight {
+            border-left-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+        }
+
+        .summary-card.warning {
+            border-left-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            color: white;
+        }
+
+        .card-icon.income { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .card-icon.deduction { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .card-icon.tax { background: linear-gradient(135deg, #10b981, #059669); }
+        .card-icon.final { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+        .card-title {
+            font-size: 0.9rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .card-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .result-sections {
+            display: grid;
+            gap: 30px;
+        }
+
+        .result-section {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 20px 30px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .section-content {
+            padding: 30px;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .breakdown-table th,
+        .breakdown-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .breakdown-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .breakdown-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .amount {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .tax-breakdown {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .tax-slab {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .tax-slab:last-child {
+            border-bottom: none;
+        }
+
+        .final-tax-card {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            text-align: center;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .final-tax-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .final-tax-label {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .no-tax-message {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            color: #065f46;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 30px 0;
+            border: 2px solid #a7f3d0;
+        }
+
+        .actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .thank-you {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: #f9fafb;
+            border-radius: 15px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .final-tax-amount {
+                font-size: 2.2rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .summary-card {
+            animation: slideIn 0.6s ease forwards;
+        }
+
+        .summary-card:nth-child(1) { animation-delay: 0.1s; }
+        .summary-card:nth-child(2) { animation-delay: 0.2s; }
+        .summary-card:nth-child(3) { animation-delay: 0.3s; }
+        .summary-card:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-file-invoice-dollar"></i> Tax Calculation Results</h1>
+            <div class="user-info">
+                <strong>{{ name.title() }}</strong> | {{ age }} years | {{ age_category }}
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="card-icon income">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="card-title">Gross Total Income</div>
+                    <div class="card-amount">₹{{ "{:,.0f}".format(gross_total_income) }}</div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="card-icon deduction">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="card-title">Total Deductions</div>
+                    <div class="card-amount">₹{{ "{:,.0f}".format(exemptions.total_exemption + deductions.total_deduction) }}</div>
+                </div>
+
+                <div class="summary-card warning">
+                    <div class="card-icon tax">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <div class="card-title">Taxable Income</div>
+                    <div class="card-amount">₹{{ "{:,.0f}".format(taxable_income) }}</div>
+                </div>
+
+                <div class="summary-card highlight">
+                    <div class="card-icon final">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <div class="card-title">Final Tax Payable</div>
+                    <div class="card-amount">₹{{ "{:,.0f}".format(final_tax) }}</div>
+                </div>
+            </div>
+
+            {% if final_tax == 0 %}
+            <div class="no-tax-message">
+                <h2><i class="fas fa-party-horn"></i> Congratulations, {{ name.title() }}!</h2>
+                <p style="font-size: 1.2rem; margin-top: 15px;">
+                    You have <strong>no tax liability</strong> for this financial year.<br>
+                    Your income falls under the tax-exempt category for {{ age_category.lower() }}.
+                </p>
+            </div>
+            {% else %}
+            <!-- Final Tax Card -->
+            <div class="final-tax-card">
+                <div class="final-tax-amount">₹{{ "{:,.0f}".format(final_tax) }}</div>
+                <div class="final-tax-label">Total Tax Payable</div>
+            </div>
+            {% endif %}
+
+            <!-- Detailed Breakdown -->
+            <div class="result-sections">
+                <!-- Income Breakdown -->
+                <div class="result-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="section-title">Income Calculation</h3>
+                    </div>
+                    <div class="section-content">
+                        <table class="breakdown-table">
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Gross Total Income</td>
+                                    <td class="amount">₹{{ "{:,.2f}".format(gross_total_income) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Less: Total Exemptions</td>
+                                    <td class="amount">₹{{ "{:,.2f}".format(exemptions.total_exemption) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Net Income</td>
+                                    <td class="amount">₹{{ "{:,.2f}".format(net_income) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Less: Total Deductions</td>
+                                    <td class="amount">₹{{ "{:,.2f}".format(deductions.total_deduction) }}</td>
+                                </tr>
+                                <tr style="background: #f0fdf4; font-weight: bold;">
+                                    <td><strong>Taxable Income</strong></td>
+                                    <td class="amount"><strong>₹{{ "{:,.2f}".format(taxable_income) }}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% if tax_breakdown %}
+                <!-- Tax Slab Breakdown -->
+                <div class="result-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <h3 class="section-title">Tax Slab Breakdown</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="tax-breakdown">
+                            {% for slab in tax_breakdown %}
+                            <div class="tax-slab">
+                                <div>
+                                    <strong>{{ slab.range }}</strong> at {{ slab.rate }}
+                                </div>
+                                <div class="amount">₹{{ "{:,.0f}".format(slab.tax_amount) }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Tax Calculation -->
+                <div class="result-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <h3 class="section-title">Final Tax Calculation</h3>
+                    </div>
+                    <div class="section-content">
+                        <table class="breakdown-table">
+                            <tbody>
+                                <tr>
+                                    <td>Basic Income Tax</td>
+                                    <td class="amount">₹{{ "{:,.2f}".format(base_tax) }}</td>
+                                </tr>
+                                {% if surcharge > 0 %}
+                                <tr>
+                                    <td>Surcharge</td>
+                                    <td class="amount">₹{{ "{:,.2f}".format(surcharge) }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td>Tax before Cess</td>
+                                    <td class="amount">₹{{ "{:,.2f}".format(tax_before_cess) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Health & Education Cess (4%)</td>
+                                    <td class="amount">₹{{ "{:,.2f}".format(cess) }}</td>
+                                </tr>
+                                <tr style="background: #fef3c7; font-weight: bold; font-size: 1.1rem;">
+                                    <td><strong>Final Tax Payable</strong></td>
+                                    <td class="amount"><strong>₹{{ "{:,.2f}".format(final_tax) }}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Deductions Details -->
+                <div class="result-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <h3 class="section-title">Deduction Breakdown</h3>
+                    </div>
+                    <div class="section-content">
+                        <table class="breakdown-table">
+                            <tbody>
+                                {% if deductions.section_80c > 0 %}
+                                <tr>
+                                    <td>Section 80C (Investments)</td>
+                                    <td class="amount">₹{{ "{:,.0f}".format(deductions.section_80c) }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if deductions.section_80d > 0 %}
+                                <tr>
+                                    <td>Section 80D (Health Insurance)</td>
+                                    <td class="amount">₹{{ "{:,.0f}".format(deductions.section_80d) }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if deductions.section_80e > 0 %}
+                                <tr>
+                                    <td>Section 80E (Education Loan)</td>
+                                    <td class="amount">₹{{ "{:,.0f}".format(deductions.section_80e) }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if deductions.section_80g > 0 %}
+                                <tr>
+                                    <td>Section 80G (Donations)</td>
+                                    <td class="amount">₹{{ "{:,.0f}".format(deductions.section_80g) }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if deductions.section_80tta > 0 %}
+                                <tr>
+                                    <td>Section 80TTA (Savings Interest)</td>
+                                    <td class="amount">₹{{ "{:,.0f}".format(deductions.section_80tta) }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if deductions.section_24 > 0 %}
+                                <tr>
+                                    <td>Section 24 (Home Loan Interest)</td>
+                                    <td class="amount">₹{{ "{:,.0f}".format(deductions.section_24) }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr style="background: #f0f9ff; font-weight: bold;">
+                                    <td><strong>Total Deductions</strong></td>
+                                    <td class="amount"><strong>₹{{ "{:,.0f}".format(deductions.total_deduction) }}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-calculator"></i> Calculate Again
+                </a>
+                <button onclick="window.print()" class="btn btn-secondary">
+                    <i class="fas fa-print"></i> Print Results
+                </button>
+                <button onclick="downloadPDF()" class="btn btn-secondary">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+            </div>
+
+            <!-- Thank You Message -->
+            <div class="thank-you">
+                <h3><i class="fas fa-heart"></i> Thank you for using TaxCalc Pro, {{ name.title() }}!</h3>
+                <p>We hope this calculation helps you plan your finances better.</p>
+                <p style="margin-top: 10px; font-size: 0.9rem;">
+                    <em>Disclaimer: This is an estimation based on current tax laws. Please consult a tax professional for final calculations.</em>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadPDF() {
+            alert('PDF download feature will be available soon!');
+        }
+
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.summary-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
