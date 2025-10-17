@@ -176,6 +176,19 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 calculator = TaxCalculator()
 
+@app.after_request
+def add_header(response):
+    """Add cache control headers to prevent caching issues"""
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+@app.route('/favicon.ico')
+def favicon():
+    """Handle favicon requests"""
+    return '', 204
+
 @app.route('/')
 def home():
     """Render the main tax calculation form"""
