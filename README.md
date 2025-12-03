@@ -75,7 +75,7 @@ Then open your browser and visit:
 
 ## 🔗 Live Demo
 
-🌐 [Try it on Replit](https://replit.com/join/idtzrvdtnm-satyamjhaa81)
+🌐 [Try it on Replit](https://replit.com/@satyamjhaa81/Taxcalculator)
 
 ---
 
