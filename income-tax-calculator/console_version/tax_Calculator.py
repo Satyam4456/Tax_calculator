@@ -439,6 +439,4 @@ if consent.lower() in ['yes', 'yeah', 'ofcourse']:
         print("Thanks to interact with us, Mr.{}.\nHave a good time.".format(name.title()))
 
 else:
-    print('Then why are you here idiot.\n'
-          'yaha jhunjhuna bajane ke liye aaye ho ka!😂😂😂😂')
-input("Got it")
+    print('Okay,\nHave a good day! 😊😊😊')
